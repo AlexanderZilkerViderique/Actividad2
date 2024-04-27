@@ -50,6 +50,9 @@
                     <div class="form-group">
                         <textarea name="descripcion" rows="2" class="form-control" placeholder="Descripción"></textarea>
                     </div>
+                    <div class="form-group">
+                        <input type="number" name="precio" class="form-control" placeholder="precio" autofocus>
+                    </div>
                     <input type="submit" class="btn btn-success btn-block" name="guardar" value="Guardar">
                 </form>
             </div>
@@ -63,7 +66,8 @@
                             <th>Artículo</th>
                             <th>Descripción</th>
                             <th>Fecha de creación</th>
-                            <th>Acciones</th>
+                            <th>precio</th>
+                            <th>acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,11 +75,14 @@
                         $query = "SELECT * FROM lista";
                         $resultado_lista = mysqli_query($conn, $query);
                         
-                        while($row = mysqli_fetch_array($resultado_lista)){?>
+                        while($row = mysqli_fetch_array($resultado_lista)){
+                            $suma += $row['precio']; 
+                        ?>
                             <tr>
                                 <td><?php echo $row['nombre']?></td>
                                 <td><?php echo $row['descripcion']?></td>
                                 <td><?php echo $row['fecha_creacion']?></td>
+                                <td><?php echo $row['precio']?></td>
                                 <!--Iconos de acciones editar, borrar -->
                                 <td>
                                     <a href="editar.php?id=<?php echo $row['id']?>" class="btn btn-secondary">
@@ -88,6 +95,14 @@
                             </tr>
                         <?php } ?>
                     </tbody>
+                    <!-- Fila para mostrar la suma -->
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align: right;">Total:</td>
+                            <td><?php echo $suma; ?></td>
+                            <td></td> <!-- Columna vacía para mantener la alineación -->
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

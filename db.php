@@ -1,26 +1,33 @@
 <?php
+// Variables de conexión (no necesitan ser private)
+$servername = "mysql";
+$port = "3306";
+$username = "root";
+$password = "root";
+$dbname = "crud_compras";
+$conn;
 
-//variable de sesión para mostrar mensajes de acciones en index
+// Inicio de la sesión
 session_start();
 
-//Conexión a base de datos
-//bloque para capturar excepciones en conexión
+// Intento de conexión a la base de datos
 try {
     $conn = mysqli_connect(
-        'localhost',
-        'root',
-        '',
-        'crud_compras'
+        $servername,
+        $username,
+        $password,
+        $dbname,
+        $port
     );
 
-    //Descomentar si se quiere ver mensaje de que la conexion es exitosa
-    /*if(isset($conn)){
-        echo 'La conexión a la BD fue exitosa';
+    if (!$conn) {
+        throw new mysqli_sql_exception(mysqli_connect_error());
     }
-    */
-}
-catch (Exception $e) {
-    echo $e->getMessage();
-}
 
+    // Si deseas mostrar un mensaje de conexión exitosa, descomenta la siguiente línea
+    // echo 'La conexión a la BD fue exitosa';
+}
+catch (mysqli_sql_exception $e) {
+    echo "Error de conexión: " . $e->getMessage();
+}
 ?>
