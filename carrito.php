@@ -25,6 +25,8 @@
             <i class="fas fa-shopping-cart"></i> LISTA DE COMPRAS
         </a>
         <!-- Agregar el enlace para ir a la página de inicio de sesión -->
+        <a href="menu.php" class="btn btn-light">Inicio</a>
+        <!-- Agregar el enlace para ir a la página de inicio de sesión -->
         <a href="index.php" class="btn btn-light">Iniciar sesión</a>
         <!-- Agregar botón para finalizar compra -->
         <a href="finalizar_compra.php" class="btn btn-success">Finalizar Compra</a>
@@ -78,9 +80,6 @@
                                 <td><?php echo $row['precio']?></td>
                                 <!-- Iconos de acciones editar, borrar -->
                                 <td>
-                                    <a href="editar.php?id=<?php echo $row['id']?>" class="btn btn-secondary">
-                                        <i class="fas fa-marker"></i>
-                                    </a>
                                     <a href="eliminar.php?id=<?php echo $row['id']?>" class="btn btn-danger">
                                         <i class="far fa-trash-alt"></i>
                                     </a>

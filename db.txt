@@ -1,0 +1,47 @@
+CREATE DATABASE crud_compras;
+
+CREATE TABLE `peliculas` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` text NOT NULL,
+  `precio` DECIMAL(10,2) NOT NULL,
+  `fecha_creacion` DATETIME NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `usuarios` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `nombre_usuario` varchar(50) NOT NULL,
+  `correo_electronico` varchar(100) NOT NULL,
+  `contrasena` varchar(255) NOT NULL,
+  `fecha_registro` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_username` (`nombre_usuario`),
+  UNIQUE KEY `unique_email` (`correo_electronico`)
+);
+
+CREATE TABLE `carrito_compras` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(12) NOT NULL,
+  `id_pelicula` int(12) NOT NULL,
+  `cantidad` int(5) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuarios`(`id`),
+  FOREIGN KEY (`id_pelicula`) REFERENCES `peliculas`(`id`)
+);
+
+CREATE TABLE `lista_compra` (
+  `id` int(12) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(12) NOT NULL,
+  `precio_total` DECIMAL(10,2) NOT NULL,
+  `fecha_compra` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_usuario`) REFERENCES `usuarios`(`id`)
+);
+
+INSERT INTO peliculas (nombre, descripcion, precio, fecha_creacion, imagen)
+VALUES
+    ('El padrino', 'El patriarca envejecido de una dinastía del crimen organizado transfiere el control de su imperio clandestino a su hijo renuente.', 9.2, '1972-03-24 00:00:00', 'imagenes/el_padrino.jpg'),
+    ('El padrino II', 'La continuación de la saga de los Corleone narra la historia de Vito Corleone desde su juventud en Sicilia hasta los años 50 en Nueva York.', 9.0, '1974-12-12 00:00:00', 'imagenes/el_padrino_ii.jpg'),
+    ('El caballero de la noche', 'Cuando la amenaza conocida como el Joker siembra el caos en Gotham, Batman debe enfrentar uno de los mayores desafíos de su vida para luchar contra la injusticia.', 9.0, '2008-07-18 00:00:00', 'imagenes/el_caballero_de_la_noche.jpg');
+
