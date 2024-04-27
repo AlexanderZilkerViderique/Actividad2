@@ -1,6 +1,10 @@
 <?php
-    //Importar conexión
-    include("db.php");
+    require_once 'conexion.php';
+
+    $conexion = new Conexion();
+    $conexion->conectar();
+    $conn = $conexion->getConnection();
+    
     //Validar si existe id seleccionado
     if(isset($_GET['id'])){
         $id = $_GET['id'];

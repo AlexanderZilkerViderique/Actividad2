@@ -1,8 +1,13 @@
 <?php
-    include("db.php");
+    require_once 'conexion.php';
+
+    $conexion = new Conexion();
+    $conexion->conectar();
+    $conn = $conexion->getConnection();
 
     // Validación si existe guadar por el método POST
     if(isset($_POST['guardar'])){
+        
         $nombre = $_POST['nombre'];
         $descripcion = $_POST['descripcion'];
         $precio = $_POST['precio'];

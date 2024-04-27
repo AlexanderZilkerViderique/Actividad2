@@ -1,4 +1,35 @@
-<?php include("db.php")?>
+<?php
+require_once 'conexion.php';
+
+$conexion = new Conexion();
+$conexion->conectar();
+$conn = $conexion->getConnection();
+
+// Verificar si se ha enviado el formulario de inicio de sesión
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Capturar los datos del formulario
+    $nombre_usuario = $_POST['nombre_usuario'];
+    $contrasena = $_POST['contrasena'];
+
+    // Realizar la consulta SQL para verificar las credenciales
+    $query = "SELECT id FROM usuarios WHERE nombre_usuario = '$nombre_usuario' AND contrasena = '$contrasena'";
+    $resultado = mysqli_query($conn, $query);
+
+    // Verificar si se encontró un usuario con las credenciales proporcionadas
+    if (mysqli_num_rows($resultado) == 1) {
+        // Iniciar sesión y redirigir al usuario a otra página
+        session_start();
+        $_SESSION['loggedin'] = true;
+        $_SESSION['usuario_id'] = mysqli_fetch_assoc($resultado)['id']; // Guardar el ID del usuario en la sesión
+        $_SESSION['nombre_usuario'] = $nombre_usuario;
+        header("Location: menu.php");
+        exit();
+    } else {
+        // Mostrar un mensaje de error si las credenciales son incorrectas
+        $mensaje_error = "Nombre de usuario o contraseña incorrectos.";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,106 +37,45 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LISTA COMPRAS</title>
-    <!--Bootstrap 5.3.2 -->
+    <title>Iniciar sesión</title>
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <!-- Font Awesome para iconos de botones-->
-    <script src="https://kit.fontawesome.com/07ff07af43.js" crossorigin="anonymous"></script>
-
-    
 </head>
 <body>
 
-<!-- Barra de navegación -->
-<nav class="navbar bg-primary" data-bs-theme="dark">
-    <div class="container">
-        <a href="index.php" class="navbar-brand">
-        <i class="fas fa-shopping-cart"></i> LISTA DE COMPRAS</a>
-    </div>
-</nav>
-
-<div class="container p-4">
-    <div class="row">
-        <div class="col-md-4">
-
-            <!--Llamar mensaje de guardado mediante variable de session() en db.php -->
-              <!--validar si existe el valor 'mensaje' -->
-            <?php if(isset($_SESSION['message'])) {?>
-                <div class="alert alert-<?= $_SESSION['message_type'];?> alert-dismissible fade show" role="alert">
-                    <?= $_SESSION['message'] ?>
-                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
+<!-- Formulario de inicio de sesión -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title">Iniciar sesión</h2>
                 </div>
-            <!--destruir la variable de sesión para que no salte el mensaje-->
-            <?php session_unset();} ?>
-
-             <!--Formulario para enviar artículos a la bd -->
-            <div class="card card-body">
-                <form action="crear.php" method="POST">
-                    <div class="form-group">
-                        <input type="text" name="nombre" class="form-control" placeholder="Artículo" autofocus>
-                    </div>
-                    <div class="form-group">
-                        <textarea name="descripcion" rows="2" class="form-control" placeholder="Descripción"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <input type="number" name="precio" class="form-control" placeholder="precio" autofocus>
-                    </div>
-                    <input type="submit" class="btn btn-success btn-block" name="guardar" value="Guardar">
-                </form>
+                <div class="card-body">
+                    <?php if(isset($mensaje_error)) { ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $mensaje_error; ?>
+                        </div>
+                    <?php } ?>
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <div class="mb-3">
+                            <label for="nombre_usuario" class="form-label">Nombre de usuario:</label>
+                            <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasena" class="form-label">Contraseña:</label>
+                            <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </form>
+                </div>
             </div>
         </div>
-
-            <!--Tabla para ver artículos en BD -->
-            <div class="col-md-8">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Artículo</th>
-                            <th>Descripción</th>
-                            <th>Fecha de creación</th>
-                            <th>precio</th>
-                            <th>acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $query = "SELECT * FROM lista";
-                        $resultado_lista = mysqli_query($conn, $query);
-                        
-                        while($row = mysqli_fetch_array($resultado_lista)){
-                            $suma += $row['precio']; 
-                        ?>
-                            <tr>
-                                <td><?php echo $row['nombre']?></td>
-                                <td><?php echo $row['descripcion']?></td>
-                                <td><?php echo $row['fecha_creacion']?></td>
-                                <td><?php echo $row['precio']?></td>
-                                <!--Iconos de acciones editar, borrar -->
-                                <td>
-                                    <a href="editar.php?id=<?php echo $row['id']?>" class="btn btn-secondary">
-                                        <i class="fas fa-marker"></i>
-                                    </a>
-                                    <a href="eliminar.php?id=<?php echo $row['id']?>" class="btn btn-danger">
-                                    <i class="far fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                    <!-- Fila para mostrar la suma -->
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align: right;">Total:</td>
-                            <td><?php echo $suma; ?></td>
-                            <td></td> <!-- Columna vacía para mantener la alineación -->
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
+    </div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
+</body>
+</html>
